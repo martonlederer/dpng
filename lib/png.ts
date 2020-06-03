@@ -283,6 +283,13 @@ export class PNGImage {
 
   }
 
+  getBuffer (): Uint8Array {
+
+    this.deflate()
+    return new Uint8Array(this.buffer.buffer)
+
+  }
+
   getBase64 (): string {
 
     this.deflate()

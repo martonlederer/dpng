@@ -8,9 +8,21 @@
 
 import { PNGImage } from '../../mod.ts'
 
-export function getPNGImage () {
+export function getPNGbase64String () {
 
-  const png = new PNGImage(300, 300, 4, {r: 0, g: 0, b: 0, a: 0}),
+  const png = new PNGImage(1920, 1080, 10)
+
+  for(let i = 0; i < 1920; i++)
+    for(let j = 0; j < 40; j++)
+      png.setPixel(i, 520 + j, png.createColor({ r: 20, g: 180, b: 210, a: 0.5 }))
+
+  console.log(png.getBase64())
+
+}
+
+export function getPNGbase64URL () {
+
+  const png = new PNGImage(300, 300, 4, { r: 0, g: 0, b: 0, a: 0 }),
     red = png.createColor({ r: 255, b: 0, g: 0, a: 1 })
 
   for(let i = 0; i < 290; i++) {
@@ -22,5 +34,22 @@ export function getPNGImage () {
   }
 
   console.log(png.getDataURL())
+
+}
+
+export function savePNGImage () {
+
+  const png = new PNGImage(300, 300, 4, { r: 0, g: 0, b: 0, a: 1 }),
+    customColor = png.createColor({ r: 255, b: 70, g: 130, a: 1 })
+
+  for(let i = 0; i < 290; i++) {
+
+    png.setPixel(i, i, customColor)
+    png.setPixel(i + 1, i, customColor)
+    png.setPixel(i + 2, i, customColor)
+
+  }
+
+  Deno.writeFileSync('./test/img/test.png', png.getBuffer())
 
 }
