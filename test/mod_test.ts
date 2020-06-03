@@ -14,7 +14,8 @@ import {
   drawLineOnPNG,
   drawRectangleOnPNG,
   drawCircleOnPNG,
-  drawBorderedRectangleOnPng
+  drawBorderedRectangleOnPng,
+  drawBorderedCircleOnPNG,
 } from "./tests/png_test.ts";
 
 //getPNGbase64String();
@@ -25,3 +26,4 @@ drawLineOnPNG();
 drawRectangleOnPNG();
 drawCircleOnPNG();
 drawBorderedRectangleOnPng();
+drawBorderedCircleOnPNG();

@@ -75,6 +75,10 @@ function writeString(
 interface Palette {
   [key: string]: number;
 }
+interface Coordinate {
+  x: number;
+  y: number;
+}
 /*
 *
 * Helper interface to create valid RGB colors
@@ -283,12 +287,18 @@ export class Image {
   * @param color  the color of the line
   *
   * */
-  drawLine (x: number, y: number, width: number, height: number, color: number): void {
-
-    for(let i = 0; i < width; i++)
-      for(let j = 0; j < height; j++)
-        this.setPixel(x + i, y + j, color)
-
+  drawLine(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    color: number,
+  ): void {
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < height; j++) {
+        this.setPixel(x + i, y + j, color);
+      }
+    }
   }
 
   /*
@@ -302,13 +312,18 @@ export class Image {
   * @param color  the color of the rect
   *
   * */
-  drawRect (x1: number, y1: number, x2: number, y2: number, color: number): void {
+  drawRect(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    color: number,
+  ): void {
+    if (x1 > x2 || y1 > y2) {
+      throw new Error("x2 or y2 can't be greater than x1 or y1");
+    }
 
-    if(x1 > x2 || y1 > y2)
-      throw new Error('x2 or y2 can\'t be greater than x1 or y1')
-
-    this.drawLine(x1, y1, x2 - x1, y2- y1, color)
-
+    this.drawLine(x1, y1, x2 - x1, y2 - y1, color);
   }
 
   /*
@@ -324,22 +339,90 @@ export class Image {
   * @param outsideColor the color of the border
   *
   * */
-  drawBorderedRect (x1: number, y1: number, x2: number, y2: number, borderSize: number, insideColor: number, outsideColor: number): void {
+  drawBorderedRect(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    borderSize: number,
+    insideColor: number,
+    outsideColor: number,
+  ): void {
+    if (x1 > x2 || y1 > y2) {
+      throw new Error("x2 or y2 can't be greater than x1 or y1");
+    }
 
-    if(x1 > x2 || y1 > y2)
-      throw new Error('x2 or y2 can\'t be greater than x1 or y1')
-
-    this.drawLine(x1, y1, x2 - x1, borderSize, outsideColor)
-    this.drawLine(x1, y2 - borderSize, x2 - x1, borderSize, outsideColor)
-    this.drawLine(x1, y1, borderSize, y2 - y1, outsideColor)
-    this.drawLine(x2 - borderSize, y1, borderSize, y2 - y1, outsideColor)
-    this.drawRect(x1 + borderSize, y1 + borderSize, x2 - borderSize, y2 - borderSize, insideColor)
-
+    this.drawLine(x1, y1, x2 - x1, borderSize, outsideColor);
+    this.drawLine(x1, y2 - borderSize, x2 - x1, borderSize, outsideColor);
+    this.drawLine(x1, y1, borderSize, y2 - y1, outsideColor);
+    this.drawLine(x2 - borderSize, y1, borderSize, y2 - y1, outsideColor);
+    this.drawRect(
+      x1 + borderSize,
+      y1 + borderSize,
+      x2 - borderSize,
+      y2 - borderSize,
+      insideColor,
+    );
   }
 
   /*
   *
-  * Drawing a circle line
+  * Getting the required parameters for a circle drawing
+  *
+  * @param x_center  The x coordinate of the center of the circle
+  * @param y_center  The y coordinate of the center of the circle
+  * @param r  The radius of the circle
+  *
+  * @return outlinePixels The pixels on the edge of the circle
+  *
+  * */
+  getCirclePoints(
+    x_center: number,
+    y_center: number,
+    r: number,
+  ): Array<Array<Coordinate>> {
+    let x = r,
+      y = 0,
+      P = 1 - r;
+
+    let outlinePixels = [];
+
+    while (x >= y) {
+      outlinePixels.push(
+        [
+          { x: x + x_center, y: y + y_center },
+          { x: x + x_center, y: -y + y_center },
+        ],
+        [
+          { x: -x + x_center, y: y + y_center },
+          { x: -x + x_center, y: -y + y_center },
+        ],
+        [
+          { x: y + x_center, y: x + y_center },
+          { x: y + x_center, y: -x + y_center },
+        ],
+        [
+          { x: -y + x_center, y: x + y_center },
+          { x: -y + x_center, y: -x + y_center },
+        ],
+      );
+
+      y++;
+
+      if (P < 0) {
+        P += 2 * y + 1;
+      } else {
+        x--;
+        P += 2 * (y - x + 1);
+      }
+    }
+
+    return outlinePixels;
+  }
+
+  /*
+  *
+  * Drawing a filled circle
   *
   * @param x_center  The x coordinate of the center of the circle
   * @param y_center  The y coordinate of the center of the circle
@@ -347,43 +430,60 @@ export class Image {
   * @param color  The color of the circle
   *
   * */
-  drawCircle (x_center: number, y_center: number, r: number, color: number): void {
+  drawFilledCircle(
+    x_center: number,
+    y_center: number,
+    r: number,
+    color: number,
+  ): void {
+    const outlinePixels = this.getCirclePoints(x_center, y_center, r);
 
-    let x = r,
-      y = 0,
-      P = 1 - r
-
-    let outlinePixels = []
-
-    if(r === 0) {
-
-      this.setPixel(x_center, y_center, color)
-      return
-
-    }
-
-    while(x >= y) {
-
-      outlinePixels.push({ x: x + x_center, y: y + y_center }, { x: - x + x_center, y: y + y_center }, { x: x + x_center, y: - y + y_center }, { x: -x + x_center, y: -y + y_center })
-      outlinePixels.push({ x: y + x_center, y: x + y_center }, { x: -y + x_center, y: x + y_center }, { x: y + x_center, y: -x + y_center }, { x: -y + x_center, y: -x + y_center })
-
-      y++
-
-      if(P < 0)
-        P += 2 * y + 1
-
-      else {
-
-        x--
-        P += 2 * (y - x + 1)
-
+    for (const line of outlinePixels) {
+      for (let i = 0; i < line[0].y - line[1].y + 1; i++) {
+        this.setPixel(line[1].x, line[1].y + i, color);
       }
+    }
+  }
 
+  /*
+  *
+  * THIS FEATURE IS NOT YET WORKING
+  *
+  * TODO: FIX THIS
+  *
+  * Drawing an outlined circle
+  *
+  * @param x_center  The x coordinate of the center of the circle
+  * @param y_center  The y coordinate of the center of the circle
+  * @param r  The radius of the circle (with the border size)
+  * @param borderSize how thick border / outline should be
+  * @param insideColor the color inside the circle border
+  * @param outsideColor the color of the border
+  *
+  * */
+  drawBorderedCircle(
+    x_center: number,
+    y_center: number,
+    r: number,
+    borderSize: number,
+    insideColor: number,
+    outsideColor: number,
+  ): void {
+    const outlinePixels = this.getCirclePoints(x_center, y_center, r),
+      innerPixels = this.getCirclePoints(x_center, y_center, r - borderSize);
+
+    for (const line of outlinePixels) {
+      this.drawLine(line[0].x, line[0].y - 1, borderSize, 1, outsideColor);
+      this.drawLine(line[0].x - 1, line[0].y, 1, borderSize, outsideColor);
+      this.drawLine(line[1].x, line[1].y, borderSize, 1, outsideColor);
+      this.drawLine(line[1].x, line[1].y, 1, borderSize, outsideColor);
     }
 
-    for(const pixel of outlinePixels)
-      this.setPixel(pixel.x, pixel.y, color)
-
+    for (const line of innerPixels) {
+      for (let i = 0; i < line[0].y - line[1].y + 1; i++) {
+        this.setPixel(line[1].x, line[1].y + i, insideColor);
+      }
+    }
   }
 
   /*

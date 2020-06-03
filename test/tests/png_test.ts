@@ -117,9 +117,18 @@ export function drawRectangleOnPNG () {
 export function drawCircleOnPNG () {
 
   const png = new PNGImage(128, 128)
-  png.drawCircle(40, 40, 20, png.createRGBColor({ r: 10, g: 168, b: 0, a: 0.45 }))
+  png.drawFilledCircle(40, 40, 20, png.createRGBColor({ r: 200, g: 168, b: 0, a: 0.45 }))
 
   Deno.writeFileSync('./test/img/circle_test.png', png.getBuffer())
+
+}
+
+export function drawBorderedCircleOnPNG () {
+
+  const png = new PNGImage(128, 128)
+  png.drawBorderedCircle(40, 40, 20, 3, png.createRGBColor({ r: 200, g: 168, b: 0, a: 1 }), png.createRGBColor({ r: 255, g: 0, b: 0, a: 1 }))
+
+  Deno.writeFileSync('./test/img/bordered_circle_test.png', png.getBuffer())
 
 }
 
