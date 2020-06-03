@@ -6,7 +6,7 @@
  * https://marton.lederer.hu
  */
 
-import { Image, RGB } from './Image.ts'
+import { Image, RGB } from "./Image.ts";
 
 /*
 *
@@ -14,11 +14,12 @@ import { Image, RGB } from './Image.ts'
 *
 */
 export class PNGImage extends Image {
-
-  constructor (width: number, height: number, depth: number = 10, backgroundColor: RGB = { r: 0, g: 0, b: 0, a: 0 }) {
-
-    super(width, height, depth, backgroundColor, '\x89PNG\r\n\x1A\n')
-
+  constructor(
+    width: number,
+    height: number,
+    depth: number = 10,
+    backgroundColor: RGB = { r: 0, g: 0, b: 0, a: 0 },
+  ) {
+    super(width, height, depth, backgroundColor, "\x89PNG\r\n\x1A\n");
   }
-
 }

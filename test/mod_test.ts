@@ -6,9 +6,14 @@
  * https://marton.lederer.hu
  */
 
-import { getPNGbase64String, getPNGbase64URL, savePNGImage, getPixelFromImage } from './tests/png_test.ts'
+import {
+  getPNGbase64String,
+  getPNGbase64URL,
+  savePNGImage,
+  getPixelFromImage,
+} from "./tests/png_test.ts";
 
-getPNGbase64String()
-getPNGbase64URL()
-savePNGImage()
-getPixelFromImage()
+getPNGbase64String();
+getPNGbase64URL();
+savePNGImage();
+getPixelFromImage();
