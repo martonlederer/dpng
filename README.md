@@ -73,7 +73,7 @@ Deno.writeFileSync('./assets/img/denos_land.png', png.getBuffer())
 Make sure to add flag `--allow-write`, when running your code.
 
 ## Feature plans, goals
-- [ ] Fix 
+- [ ] Fix bordered circle
 - [ ] A `createColor` function that converts css-style colors to `<RGB>` type colors
 - [ ] `getPixel` or an alternative new function to return css-style colors (maybe with a param)
 - [ ] Add loading `buffers` / `Uint8Array`s
