@@ -6,4 +6,5 @@
  * https://marton.lederer.hu
  */
 
-export { PNGImage } from './lib/png.ts'
+export { Image, RGB } from './lib/Image.ts'
+export { PNGImage } from './lib/PNGImage.ts'

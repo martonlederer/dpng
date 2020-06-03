@@ -8,8 +8,6 @@
 
 import { fromUint8Array } from '../deps.ts'
 
-const HEADER = '\x89PNG\r\n\x1A\n'
-
 // crc32 lookup
 const crc32: Array<number> = []
 
@@ -91,9 +89,30 @@ interface Palette {
   [key: string]: number
 
 }
+/*
+*
+* Helper interface to create valid RGB colors
+*
+* */
+export interface RGB {
 
-//creating the image here
-export class PNGImage {
+  r: number,
+  g: number,
+  b: number,
+  a: number
+
+}
+
+/*
+*
+* Creating a basic image, without extension type
+*
+* To create a PNG image, use `PNGImage`
+*
+* See the documentation for other image types
+*
+*/
+export class Image {
 
   private readonly width: number
   private height: number
@@ -122,7 +141,17 @@ export class PNGImage {
   private pindex: number
   private backgroundColor: Object
 
-  constructor (width: number, height: number, depth: number, backgroundColor: Object = { r: 0, g: 0, b: 0, a: 0 }) {
+  /*
+  *
+  * @typeParam  backgroundColor The background color of the desired image. Black by default
+  *
+  * @param width  The width of the desired image
+  * @param height The height of the desired image
+  *
+  * @param depth  The depth of the desired image. 10 by default
+  *
+  * */
+  constructor (width: number, height: number, depth: number = 10, backgroundColor: RGB = { r: 0, g: 0, b: 0, a: 0 }, HEADER: string) {
 
     this.width = width
     this.height = height
@@ -144,7 +173,7 @@ export class PNGImage {
     this.idat_size = 4 + 4 + this.data_size + 4
     this.iend_offs = this.idat_offs + this.idat_size
     this.iend_size = 4 + 4 + 4
-    this.buffer_size  = this.iend_offs + this.iend_size
+    this.buffer_size = this.iend_offs + this.iend_size
 
     const rawBuffer = new ArrayBuffer(HEADER.length + this.buffer_size)
 
@@ -199,10 +228,15 @@ export class PNGImage {
 
     }
 
-    this.backgroundColor = this.createColor(backgroundColor);
+    this.backgroundColor = this.createRGBColor(backgroundColor);
 
   }
 
+  /*
+  *
+  * Deflate before converting
+  *
+  * */
   deflate (): void {
 
     const { width, height, buffer } = this,
@@ -222,13 +256,12 @@ export class PNGImage {
         s1 += buffer[baseOffset * Math.floor((i / 0xffff) + 1) + i]
         s2 += s1
 
-        if((n-= 1) == 0) {
+        if((n -= 1) != 0)
+          continue
 
-          s1 %= BASE
-          s2 %= BASE
-          n = NMAX
-
-        }
+        s1 %= BASE
+        s2 %= BASE
+        n = NMAX
 
       }
 
@@ -244,20 +277,35 @@ export class PNGImage {
 
   }
 
-  setPixel (x: number, y: number, color: any): void {
+  /*
+  *
+  * Drawing on the image canvas
+  *
+  * @param x  x coordinate of the pixel
+  * @param y  y coordinate of the pixel
+  * @param color  The color of the pixel, you can generate one with createRGBColor
+  *
+  * */
+  setPixel (x: number, y: number, color: number): void {
 
     const i = y * (this.width + 1) + x + 1
     this.buffer[this.idat_offs + 8 + 2 + 5 * Math.floor((i / 0xffff) + 1) + i] = color
 
   }
 
-  index (x: number, y: number): number {
-
-    const i = y * (this.width + 1) + x + 1
-    return this.idat_offs + 8 + 2 + 5 * Math.floor((i / 0xffff) + 1) + i
-
-  }
-
+  /*
+  *
+  * @internal
+  * Create color from rgba value
+  *
+  * @param red  Red color amount (0-255)
+  * @param green  Green color amount (0-255)
+  * @param blue  Blue color amount (0-255)
+  * @param alpha  Opacity of the color
+  *
+  * @return Color from palette
+  *
+  * */
   color (red: number, green: number, blue: number, alpha: number): number {
 
     alpha = alpha >= 0 ? alpha : 255
@@ -283,6 +331,30 @@ export class PNGImage {
 
   }
 
+  /*
+  *
+  * Get the index of a pixel
+  *
+  * @param x  x coordinate of the pixel
+  * @param y  y coordinate of the pixel
+  *
+  * @return index of the pixel
+  *
+  * */
+  index (x: number, y: number): number {
+
+    const i = y * (this.width + 1) + x + 1
+    return this.idat_offs + 8 + 2 + 5 * Math.floor((i / 0xffff) + 1) + i
+
+  }
+
+  /*
+  *
+  * Get the image buffer
+  *
+  * @return image buffer
+  *
+  * */
   getBuffer (): Uint8Array {
 
     this.deflate()
@@ -290,6 +362,13 @@ export class PNGImage {
 
   }
 
+  /*
+  *
+  * Get the base64 encoded image string
+  *
+  * @return base64 string of the image
+  *
+  * */
   getBase64 (): string {
 
     this.deflate()
@@ -297,19 +376,47 @@ export class PNGImage {
 
   }
 
-  getDataURL(): string {
+  /*
+  *
+  * Get the base64 encoded image converted to HTML data url.
+  * This can be used in img tags' src attribute
+  *
+  * @return base64 encoded source
+  *
+  * */
+  getDataURL (): string {
 
     return 'data:image/png;base64,' + this.getBase64()
 
   }
 
-  //TODO: conver CSS style colors to rgb
-  createColor (rgb: any): number {
+  //TODO: convert CSS style colors to rgb
 
-    return this.color(rgb.r, rgb.g, rgb.b, Math.round(rgb.a * 255))
+  /*
+  *
+  * Create an rgb color
+  *
+  * @typeParam color  RGB type color
+  *
+  * @return color to use with setPixel
+  *
+  * */
+  createRGBColor (color: RGB): number {
+
+    return this.color(color.r, color.g, color.b, Math.round(color.a * 255))
 
   }
 
+  /*
+  *
+  * Get the color of a pixel
+  *
+  * @param x  x coordinate of the pixel
+  * @param y  y coordinate of the pixel
+  *
+  * @return the internal color of the pixel
+  *
+  * */
   getPixel (x: number, y: number): number {
 
     const i = y * (this.width + 1) + x + 1

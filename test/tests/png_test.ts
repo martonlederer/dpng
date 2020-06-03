@@ -8,48 +8,90 @@
 
 import { PNGImage } from '../../mod.ts'
 
-export function getPNGbase64String () {
-
-  const png = new PNGImage(1920, 1080, 10)
-
-  for(let i = 0; i < 1920; i++)
-    for(let j = 0; j < 40; j++)
-      png.setPixel(i, 520 + j, png.createColor({ r: 20, g: 180, b: 210, a: 0.5 }))
-
-  console.log(png.getBase64())
-
-}
-
-export function getPNGbase64URL () {
-
-  const png = new PNGImage(300, 300, 4, { r: 0, g: 0, b: 0, a: 0 }),
-    red = png.createColor({ r: 255, b: 0, g: 0, a: 1 })
-
-  for(let i = 0; i < 290; i++) {
-
-    png.setPixel(i, i, red)
-    png.setPixel(i + 1, i, red)
-    png.setPixel(i + 2, i, red)
-
-  }
-
-  console.log(png.getDataURL())
-
-}
-
 export function savePNGImage () {
 
-  const png = new PNGImage(300, 300, 4, { r: 0, g: 0, b: 0, a: 1 }),
-    customColor = png.createColor({ r: 255, b: 70, g: 130, a: 1 })
+  //creating the image canvas
+  const png = new PNGImage(300, 300, 10, { r: 0, g: 0, b: 0, a: 0 }),
+    //creating a color
+    customColor = png.createRGBColor({ r: 255, g: 0, b: 0, a: 1 })
 
   for(let i = 0; i < 290; i++) {
 
+    //drawing on a pixel
     png.setPixel(i, i, customColor)
     png.setPixel(i + 1, i, customColor)
     png.setPixel(i + 2, i, customColor)
 
   }
 
+  //saving the file using the buffer
   Deno.writeFileSync('./test/img/test.png', png.getBuffer())
+
+}
+
+export function getPNGbase64String () {
+
+  //creating the image canvas
+  const png = new PNGImage(1920, 1080)
+
+  for(let i = 0; i < 1920; i++)
+    for(let j = 0; j < 40; j++)
+      png.setPixel(i, 520 + j, png.createRGBColor({ r: 20, g: 180, b: 210, a: 0.5 }))
+
+  //getting a base64 string
+  console.log(png.getBase64())
+
+  //saving the file
+  Deno.writeFileSync('./test/img/base64_string_test.png', png.getBuffer())
+
+}
+
+export function getPNGbase64URL () {
+
+  //creating the image canvas
+  const png = new PNGImage(300, 300, 4, { r: 0, g: 0, b: 0, a: 0 }),
+    //creating a color
+    red = png.createRGBColor({ r: 255, g: 0, b: 0, a: 1 })
+
+  for(let i = 0; i < 290; i++) {
+
+    //drawing on a pixel
+    png.setPixel(i, i, red)
+    png.setPixel(i + 1, i, red)
+    png.setPixel(i + 2, i, red)
+
+  }
+
+  //getting a data url
+  //this can be used in an src attr in an html image tag
+  console.log(png.getDataURL())
+
+  //saving the file
+  Deno.writeFileSync('./test/img/base64_html_src_tag_test.png', png.getBuffer())
+
+}
+
+export function getPixelFromImage () {
+
+  //creating the image canvas
+  const png = new PNGImage(1920, 1080)
+
+  for(let i = 0; i < 1920; i++)
+    for(let j = 0; j < 40; j++) {
+
+      let randomRed = Math.floor(Math.random() * 250)
+
+      //drawing on a pixel
+      png.setPixel(i, 520 + j, png.createRGBColor({ r: randomRed, g: 20, b: 10, a: 0.75 }))
+      //getting color
+      console.log(`Pixel (${i} ${520 + j})'s color is:`, png.getPixel(i, 520 + j))
+
+    }
+
+  //no color: 0
+  console.log(`Pixel (1919 1079)'s color is:`, png.getPixel(1919, 1079))
+
+  //saving the file
+  Deno.writeFileSync('./test/img/pixel_test.png', png.getBuffer())
 
 }
