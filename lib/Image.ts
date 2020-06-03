@@ -274,6 +274,120 @@ export class Image {
 
   /*
   *
+  * Drawing a line
+  *
+  * @param x  x coordinate of the line
+  * @param y  y coordinate of the line
+  * @param width  the width of the line
+  * @param height the height of the line
+  * @param color  the color of the line
+  *
+  * */
+  drawLine (x: number, y: number, width: number, height: number, color: number): void {
+
+    for(let i = 0; i < width; i++)
+      for(let j = 0; j < height; j++)
+        this.setPixel(x + i, y + j, color)
+
+  }
+
+  /*
+  *
+  * Drawing a rectangle
+  *
+  * @param x1 start x coordinate of the rect
+  * @param y1 start y coordinate of the rect
+  * @param x2 end x coordinate of the rect
+  * @param y2 end y coordinate of the rect
+  * @param color  the color of the rect
+  *
+  * */
+  drawRect (x1: number, y1: number, x2: number, y2: number, color: number): void {
+
+    if(x1 > x2 || y1 > y2)
+      throw new Error('x2 or y2 can\'t be greater than x1 or y1')
+
+    this.drawLine(x1, y1, x2 - x1, y2- y1, color)
+
+  }
+
+  /*
+  *
+  * Drawing a bordered rectangle
+  *
+  * @param x1 start x coordinate of the rect
+  * @param y1 start y coordinate of the rect
+  * @param x2 end x coordinate of the rect
+  * @param y2 end y coordinate of the rect
+  * @param borderSize how thick should the border be
+  * @param insideColor the color inside the rectangle border
+  * @param outsideColor the color of the border
+  *
+  * */
+  drawBorderedRect (x1: number, y1: number, x2: number, y2: number, borderSize: number, insideColor: number, outsideColor: number): void {
+
+    if(x1 > x2 || y1 > y2)
+      throw new Error('x2 or y2 can\'t be greater than x1 or y1')
+
+    this.drawLine(x1, y1, x2 - x1, borderSize, outsideColor)
+    this.drawLine(x1, y2 - borderSize, x2 - x1, borderSize, outsideColor)
+    this.drawLine(x1, y1, borderSize, y2 - y1, outsideColor)
+    this.drawLine(x2 - borderSize, y1, borderSize, y2 - y1, outsideColor)
+    this.drawRect(x1 + borderSize, y1 + borderSize, x2 - borderSize, y2 - borderSize, insideColor)
+
+  }
+
+  /*
+  *
+  * Drawing a circle line
+  *
+  * @param x_center  The x coordinate of the center of the circle
+  * @param y_center  The y coordinate of the center of the circle
+  * @param r  The radius of the circle
+  * @param color  The color of the circle
+  *
+  * */
+  drawCircle (x_center: number, y_center: number, r: number, color: number): void {
+
+    let x = r,
+      y = 0,
+      P = 1 - r
+
+    let outlinePixels = []
+
+    if(r === 0) {
+
+      this.setPixel(x_center, y_center, color)
+      return
+
+    }
+
+    while(x >= y) {
+
+      outlinePixels.push({ x: x + x_center, y: y + y_center }, { x: - x + x_center, y: y + y_center }, { x: x + x_center, y: - y + y_center }, { x: -x + x_center, y: -y + y_center })
+      outlinePixels.push({ x: y + x_center, y: x + y_center }, { x: -y + x_center, y: x + y_center }, { x: y + x_center, y: -x + y_center }, { x: -y + x_center, y: -x + y_center })
+
+      y++
+
+      if(P < 0)
+        P += 2 * y + 1
+
+      else {
+
+        x--
+        P += 2 * (y - x + 1)
+
+      }
+
+    }
+
+    for(const pixel of outlinePixels)
+      this.setPixel(pixel.x, pixel.y, color)
+
+  }
+
+  /*
+  *
   * @internal
   * Create color from rgba value
   *

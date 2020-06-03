@@ -11,9 +11,17 @@ import {
   getPNGbase64URL,
   savePNGImage,
   getPixelFromImage,
+  drawLineOnPNG,
+  drawRectangleOnPNG,
+  drawCircleOnPNG,
+  drawBorderedRectangleOnPng
 } from "./tests/png_test.ts";
 
-getPNGbase64String();
-getPNGbase64URL();
-savePNGImage();
-getPixelFromImage();
+//getPNGbase64String();
+//getPNGbase64URL();
+//savePNGImage();
+//getPixelFromImage();
+drawLineOnPNG();
+drawRectangleOnPNG();
+drawCircleOnPNG();
+drawBorderedRectangleOnPng();

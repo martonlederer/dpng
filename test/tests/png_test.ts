@@ -95,3 +95,39 @@ export function getPixelFromImage () {
   Deno.writeFileSync('./test/img/pixel_test.png', png.getBuffer())
 
 }
+
+export function drawLineOnPNG () {
+
+  const png = new PNGImage(128, 128)
+  png.drawLine(10, 60, 108, 8, png.createRGBColor({ r: 255, g: 20, b: 10, a: 0.75 }))
+
+  Deno.writeFileSync('./test/img/line_test.png', png.getBuffer())
+
+}
+
+export function drawRectangleOnPNG () {
+
+  const png = new PNGImage(128, 128)
+  png.drawRect(20, 10, 100, 60, png.createRGBColor({ r: 255, g: 200, b: 10, a: 0.45 }))
+
+  Deno.writeFileSync('./test/img/rect_test.png', png.getBuffer())
+
+}
+
+export function drawCircleOnPNG () {
+
+  const png = new PNGImage(128, 128)
+  png.drawCircle(40, 40, 20, png.createRGBColor({ r: 10, g: 168, b: 0, a: 0.45 }))
+
+  Deno.writeFileSync('./test/img/circle_test.png', png.getBuffer())
+
+}
+
+export function drawBorderedRectangleOnPng () {
+
+  const png = new PNGImage(128, 128)
+  png.drawBorderedRect(10, 10, 80, 128, 1, png.createRGBColor({ r: 10, g: 86, b: 200, a: 0.8 }), png.createRGBColor({ r: 200, g: 86, b: 100, a: 0.5 }))
+
+  Deno.writeFileSync('./test/img/bordered_rect_test.png', png.getBuffer())
+
+}

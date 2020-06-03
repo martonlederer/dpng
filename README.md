@@ -44,10 +44,19 @@ Create a valid RGB (rgba) color that you can use with `setPixel`
 ### `getPixel (x: number, y: number): number`
 Get the color of a pixel
 
+### `drawLine (x: number, y: number, width: number, height: number, color: number): void`
+Draw a line inside the image
+
+### `drawRect (x1: number, y1: number, x2: number, y2: number, color: number): void`
+Draw a rectangle inside the image
+
+### `drawBorderedRect (x1: number, y1: number, x2: number, y2: number, borderSize: number, insideColor: number, outsideColor: number): void`
+Draw a rectangle with a border/outline
+
 ## Feature plans, goals
 - [ ] A `createColor` function that converts css-style colors to `<RGB>` type colors
-- [ ] Support more image formats
 - [ ] `getPixel` or an alternative new function to return css-style colors (maybe with a param)
+- [ ] Add loading `buffers` / `Uint8Array`s
 
 ## Credits
 The base of this library is largely ported from [pnglib-es6](https://github.com/IjzerenHein/pnglib-es6). Thank you very much for providing a simple, yet amazing library
