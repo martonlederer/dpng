@@ -6,4 +6,4 @@
  * https://marton.lederer.hu
  */
 
-export { PNGImage } from './lib/png.ts'
+export { fromUint8Array } from 'https://deno.land/x/base64@v0.2.0/mod.ts'

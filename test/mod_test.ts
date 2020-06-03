@@ -6,4 +6,6 @@
  * https://marton.lederer.hu
  */
 
-export { PNGImage } from './lib/png.ts'
+import { getPNGImage } from './tests/png_test.ts'
+
+getPNGImage()

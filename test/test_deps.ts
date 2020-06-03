@@ -5,5 +5,3 @@
  * https://github.com/MartonDev
  * https://marton.lederer.hu
  */
-
-export { PNGImage } from './lib/png.ts'
